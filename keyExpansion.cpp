@@ -13,16 +13,20 @@ void main()
 {
 	genSbox(Sbox);
 	geninvSbox(invSbox);
+	keyExpansion();
+	for(int i=0;i<44;i++)
+		printf("0x%x\n", expKey[i]);
+	//printMatrix(Sbox);
+	//printMatrix(invSbox);
 	printf("Hello world");
 	getchar();
 }
 #endif
 
 //keyExpansion
-uint32* keyExpansion(uint32 key[4])
+void keyExpansion()
 {
-	uint32 expKey[44]={key[0],key[1],key[2],key[3]};
-	for(int i=0; i<44; i++)
+	for(int i=4; i<44; i++)
 	{
 		if(i%4==0)
 		{
@@ -33,7 +37,6 @@ uint32* keyExpansion(uint32 key[4])
 			expKey[i] = expKey[i-4] ^ expKey[i-1];
 		}
 	}
-	return expKey;
 }
 
 
@@ -48,7 +51,8 @@ uint32 firstWord(uint32 word, uchar j)
 	cycleMove ^= (word << 8) & 0xffffff00;
 	for(int i=0;i<4;i++)
 	{
-		subt ^= SboxSubt((cycleMove >> (4*i)), Sbox) << (4*i);
+		uchar temp = (uchar)(cycleMove >> (4*i));
+		subt ^= SboxSubt(temp, Sbox) << (4*i);
 	}
 	add = subt ^ (ron[j/4] << 24);
 	return add;
