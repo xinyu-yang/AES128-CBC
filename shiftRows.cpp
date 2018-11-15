@@ -2,10 +2,14 @@
 
 #include "AES.h"
 
+//#define DEBUG
+
+#ifdef DEBUG
 void main()
 {
 	printf("this is shiftrow");
 }
+#endif
 
 //circle left move
 void shiftRows(uchar m[4][4])

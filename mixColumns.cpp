@@ -3,8 +3,9 @@
 
 #include "AES.h"
 #include "PolyOptn.h"
+#include "mixColumns.h"
 
-#define DEBUG
+//#define DEBUG
 
 #ifdef DEBUG
 void main()

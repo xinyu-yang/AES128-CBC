@@ -2,16 +2,17 @@
 #include<stdlib.h>
 
 #include "AES.h"
+#include "keyExpansion.h"
 #include "Sbox.h"
 
-#define DEBUG
+//#define DEBUG
 const uint32 ron[] = {0x00, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1B, 0x36};
 
 #ifdef DEBUG
 void main()
 {
 	genSbox(Sbox);
-	geninvSbox(invBox);
+	geninvSbox(invSbox);
 	printf("Hello world");
 	getchar();
 }
@@ -45,7 +46,7 @@ uint32 firstWord(uint32 word, uchar j)
 	uint32 add=0x00;
 	cycleMove ^= (word & 0xff000000) >> 24;
 	cycleMove ^= (word << 8) & 0xffffff00;
-	for(i=0;i<4;i++)
+	for(int i=0;i<4;i++)
 	{
 		subt ^= SboxSubt((cycleMove >> (4*i)), Sbox) << (4*i);
 	}
