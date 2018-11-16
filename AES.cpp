@@ -1,5 +1,6 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include<time.h>
 
 #include "AES.h"
 #include "Sbox.h"
@@ -24,7 +25,10 @@ void unitDecrypt(uchar list[16]);
 #ifndef DEBUG
 void main()
 {
-	
+	//initiate time variabls, and record start time
+	clock_t startTime,endTime;
+	double runTime=0;
+
 	//generate Sbox and invSbox
 	genSbox(Sbox);
 	geninvSbox(invSbox);
@@ -32,9 +36,10 @@ void main()
 	//key expansion must after generate Sbox invxbox!!!!!!
 	keyExpansion();
 	
+	startTime = clock();
 	printf("*************************************************\n");
 	//input data will be encrypted
-	FILE *inputData = fopen("testData.txt", "rb");
+	FILE *inputData = fopen("The_old_man_and_the_sea.txt", "rb");
 	//save data
 	FILE *cryptedData = fopen("encryptedData.txt", "wb+");
 	encrypt(inputData, cryptedData);
@@ -46,6 +51,9 @@ void main()
 	decrypt(cryptedData, decryptData);
 	printf("\nOutput in decryptedData.txt");
 	printf("\n*************************************************\n");
+	endTime = clock();
+	runTime = endTime - startTime;
+	printf("Run time is %.3f ms\n",runTime);
 	getchar();
 
 }
@@ -142,8 +150,9 @@ void unitEncrypt(uchar list[16])
 			list[suffix++] = array[j][i];
 		}
 	}
-
-	printf("The %-3d encryption process complted!\n", enCount++);
+	if(enCount%1000==0)
+		printf("The %-5d encryption process complted!\n", enCount);
+	enCount++;
 }
 
 
@@ -223,7 +232,8 @@ void unitDecrypt(uchar list[16])
 			list[suffix++] = array[j][i];
 		}
 	}
-
-	printf("The %-3d decryption process complted!\n", deCount++);
+	if(deCount%1000 ==0)
+		printf("The %-5d decryption process complted!\n", deCount);
+	deCount++;
 
 }

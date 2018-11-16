@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{1FF3B3CA-623C-4E2C-9C7E-A9CDEC499D6F}</ProjectGuid>
+    <ProjectGuid>{F7F2AF50-B606-471E-97F0-F05052599FA2}</ProjectGuid>
     <RootNamespace>AES</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
