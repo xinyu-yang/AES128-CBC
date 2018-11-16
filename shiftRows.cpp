@@ -19,10 +19,18 @@ void shiftRows(uchar m[4][4])
 	{
 		for(int j=0;j<4;j++)
 		{
-			mm[i][j] = m[i][(j-i+4)%4];
+			mm[i][j] = m[i][j];
 		}
 	}
-	m = mm;
+	//mm = m;
+	for(int i=0;i<4;i++)
+	{
+		for(int j=0;j<4;j++)
+		{
+			m[i][j] = mm[i][(j+i)%4];
+		}
+	}
+	//return mm;
 }
 
 
@@ -34,8 +42,15 @@ void invshiftRows(uchar m[4][4])
 	{
 		for(int j=0;j<4;j++)
 		{
-			mm[i][j] = m[i][(j+i)%4];
+			mm[i][j] = m[i][j];
 		}
 	}
-	m = mm;
+	for(int i=0;i<4;i++)
+	{
+		for(int j=0;j<4;j++)
+		{
+			m[i][j] = mm[i][(j-i+4)%4];
+		}
+	}
+	//m = mm;
 }
