@@ -9,15 +9,17 @@
 #include "mixColumns.h"
 #include "keyEnpy.h"
 
+static uchar IV[16] = {0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0a,0x0b,0x0c,0x0d,0x0e,0x0f};
+
 //#define DEBUG
 
 static uint32 enCount = 0x00;
 static uint32 deCount = 0x00;
 //encryption and decryption function
 void encrypt(FILE *inputData, FILE *outputData);
-void unitEncrypt(uchar list[16]);
+void unitEncrypt(uchar list[16], uchar *preC);
 void decrypt(FILE *inputData, FILE *outputData);
-void unitDecrypt(uchar list[16]);
+void unitDecrypt(uchar list[16], uchar *preC);
 
 
 
@@ -37,6 +39,7 @@ void main()
 	keyExpansion();
 	
 	startTime = clock();
+	printf("Author: xinyu yang\n");
 	printf("*************************************************\n");
 	//input data will be encrypted
 	FILE *inputData = fopen("The_old_man_and_the_sea.txt", "rb");
@@ -67,12 +70,17 @@ void encrypt(FILE *inputData, FILE *outputData)
 	uchar list[16];
 	int suffix=0;
 	uchar temp=0x00;
+	uchar *preC = IV;
+	fwrite(preC,16,1,outputData);
 	while(fread(list,16,1,inputData)==1)
 	{
-		unitEncrypt(list);
+		unitEncrypt(list, preC);
+		for(int i=0;i<16;i++)
+			preC[i] = list[i];
 		fwrite(list,16,1,outputData);
 	}
 
+	//encrypt least data, whose length < 128
 	while((temp = fgetc(inputData)!=EOF))
 	{
 		list[suffix++] = temp;
@@ -84,7 +92,7 @@ void encrypt(FILE *inputData, FILE *outputData)
 		{
 			list[i] = 0x00;
 		}
-		unitEncrypt(list);
+		unitEncrypt(list, preC);
 		fwrite(list,16,1,outputData);
 	}
 
@@ -92,7 +100,7 @@ void encrypt(FILE *inputData, FILE *outputData)
 	fclose(outputData);
 }
 
-void unitEncrypt(uchar list[16])
+void unitEncrypt(uchar list[16], uchar *preC)
 {
 	//the suffix of list
 	int suffix=0;
@@ -105,6 +113,7 @@ void unitEncrypt(uchar list[16])
 		for(int j=0;j<4;j++)
 		{
 			array[j][i] = list[suffix++];
+			array[j][i] ^= preC[suffix - 1]; 
 		}
 	}
 	//first encrypt by key
@@ -161,9 +170,17 @@ void decrypt(FILE *inputData, FILE *outputData)
 	//input list of 16 bytes
 	uchar list[16];
 	int suffix=0;
+	uchar IV[16] = {0x00};
+	uchar *preC = IV;
+	uchar thisC[16] = {0x00};
+	fread(preC,16,1,inputData);
 	while(fread(list,16,1,inputData)==1)
 	{
-		unitDecrypt(list);
+		for(int i=0;i<16;i++)
+			thisC[i] = list[i];
+		unitDecrypt(list, preC);
+		for(int i=0;i<16;i++)
+			preC[i] = thisC[i];
 		fwrite(list,16,1,outputData);
 	}
 
@@ -171,7 +188,7 @@ void decrypt(FILE *inputData, FILE *outputData)
 	fclose(outputData);
 }
 
-void unitDecrypt(uchar list[16])
+void unitDecrypt(uchar list[16], uchar *preC)
 {
 	//the suffix of list
 	int suffix=0;
@@ -230,6 +247,7 @@ void unitDecrypt(uchar list[16])
 		for(int j=0;j<4;j++)
 		{
 			list[suffix++] = array[j][i];
+			list[suffix - 1] ^= preC[suffix - 1];
 		}
 	}
 	if(deCount%1000 ==0)
